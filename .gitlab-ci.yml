@@ -4,27 +4,16 @@ include:
 image: maven:latest
 
 variables:
-  MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode --fail-at-end --show-version"
+  MAVEN_CLI_OPTS: "-P gitlab-ci -s .m2/settings.xml --batch-mode --fail-at-end --show-version"
   MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
 
 cache:
   paths:
     - .m2/repository/
-    - target/
-
-test:
-  stage: test
-  script:
-    - mvn $MAVEN_CLI_OPTS verify
-  artifacts:
-    reports:
-      junit:
-        - target/surefire-reports/TEST-*.xml
-        - target/failsafe-reports/TEST-*.xml
 
 deploy:
   stage: deploy
   script:
-    - mvn $MAVEN_CLI_OPTS install
+    - mvn $MAVEN_CLI_OPTS clean install deploy
   only:
     - master
