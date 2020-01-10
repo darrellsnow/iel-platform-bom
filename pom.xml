@@ -11,9 +11,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>com.iengagelabs</groupId>
-    <artifactId>iel-platform-bom</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>com.iengagelabs.platform</groupId>
+    <artifactId>bom</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -25,6 +25,7 @@
         <developer>
             <name>Darrell Snow</name>
             <organization>iEngage Labs, llc</organization>
+            <email>darrell.snow@iengagelabs.com</email>
         </developer>
     </developers>
 
@@ -38,10 +39,27 @@
         <jaxb.version>2.3.0</jaxb.version>
         <org.mapstruct.version>1.3.1.Final</org.mapstruct.version>
         <awaitility.version>4.0.1</awaitility.version>
+        <maven-help-plugin.version>3.2.0</maven-help-plugin.version>
+
+        <junit-platform.version>1.2.0</junit-platform.version>
+        <junit-jupiter.version>5.2.0</junit-jupiter.version>
+
     </properties>
+
+    <modules>
+        <module>../iel-common</module>
+        <module>../iel-shell</module>
+        <module>../iel-shell-service</module>
+        <module>../iel-springadmin</module>
+    </modules>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.iengagelabs</groupId>
+                <artifactId>common</artifactId>
+            </dependency>
+
             <dependency>
                 <groupId>javax.xml.bind</groupId>
                 <artifactId>jaxb-api</artifactId>
@@ -92,10 +110,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -143,6 +157,22 @@
 
     <build>
         <plugins>
+            <!-- display active profile in compile phase -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-help-plugin</artifactId>
+                <version>${maven-help-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>show-profiles</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>active-profiles</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -214,23 +244,27 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>gitlab-maven-iel-platform-bom</id>
-            <url>https://gitlab.com/api/v4/projects/16166965/packages/maven</url>
-        </repository>
-    </repositories>
+    <profiles>
+        <profile>
+            <id>gitlab-ci</id>
+            <repositories>
+                <repository>
+                    <id>gitlab-maven-iel-platform-bom</id>
+                    <url>https://gitlab.com/api/v4/projects/16166965/packages/maven</url>
+                </repository>
+            </repositories>
 
-    <distributionManagement>
-        <repository>
-            <id>gitlab-maven-iel-platform-bom</id>
-            <url>https://gitlab.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</url>
-        </repository>
+            <distributionManagement>
+                <repository>
+                    <id>gitlab-maven-iel-platform-bom</id>
+                    <url>https://gitlab.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</url>
+                </repository>
 
-        <snapshotRepository>
-            <id>gitlab-maven-iel-platform-bom</id>
-            <url>https://gitlab.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</url>
-        </snapshotRepository>
-    </distributionManagement>
-
+                <snapshotRepository>
+                    <id>gitlab-maven-iel-platform-bom</id>
+                    <url>https://gitlab.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+    </profiles>
 </project>
